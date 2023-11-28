@@ -16,6 +16,7 @@ return new class extends Migration
 
             $table->string('name');
             $table->text('brief')->nullable();
+            $table->text('image')->nullable();
 
             $table->enum('type', ['HERO', 'MAIN', 'SUB'])->default('SUB');
             $table->foreignId('series_id')->constrained('series');
