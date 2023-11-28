@@ -16,4 +16,6 @@ Route::controller(TagController::class)->group(function () {
 
     Route::post('tag', 'store');
     Route::put('tag/{id}', 'update');
+
+    Route::delete('tag/{id}', 'destroy');
 });

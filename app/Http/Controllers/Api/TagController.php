@@ -135,4 +135,37 @@ class TagController extends Controller
             ];
         }
     }
+
+    function destroy($id)
+    {
+        $validator = Validator::make(
+            ['id' => $id],
+            ['id' => 'required|numeric|exists:tags,id'],
+            [
+                'id.required' => 'Tag is required',
+                'id.numeric' => 'Tag ID must be a number',
+                'id.exists' => 'Tag is not found'
+            ]
+        );
+
+        if ($validator->fails()) {
+            return [
+                'status_code' => 404,
+                'message' => $validator->messages()->first()
+            ];
+        }
+
+        $tag = Tag::destroy($id);
+        if ($tag) {
+            return [
+                'status_code' => 201,
+                'message' => 'Tag has been deleted successfully.',
+            ];
+        } else {
+            return [
+                'status_code' => 400,
+                'message' => 'Tag delete failed.',
+            ];
+        }
+    }
 }
