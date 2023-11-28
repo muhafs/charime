@@ -58,7 +58,7 @@ class TagController extends Controller
                 'category_id' => 'required|numeric|exists:categories,id'
             ],
             [
-                'name.required' => 'Tag Name is required',
+                'name.required' => 'Tag Name can\'t be Empty',
                 'name.unique' => 'This name has already taken',
 
                 'category_id.required' => 'Category is required',
@@ -69,7 +69,7 @@ class TagController extends Controller
 
         if ($validator->fails()) {
             return [
-                'status_code' => 404,
+                'status_code' => 400,
                 'message' => $validator->messages()->first()
             ];
         }
@@ -85,6 +85,53 @@ class TagController extends Controller
             return [
                 'status_code' => 400,
                 'message' => 'Tag create failed.',
+            ];
+        }
+    }
+
+    function update(Request $request, $id)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'name' => 'required|string|unique:tags,name,' . $id,
+                'description' => 'nullable|string',
+                'category_id' => 'required|numeric|exists:categories,id'
+            ],
+            [
+                'name.required' => 'Tag name can\'t be Empty',
+                'name.unique' => 'This name has already taken',
+
+                'category_id.required' => 'Category is required',
+                'category_id.numeric' => 'Category ID must be a number',
+                'category_id.exists' => 'Category is not found'
+            ]
+        );
+
+        if ($validator->fails()) {
+            return [
+                'status_code' => 400,
+                'message' => $validator->messages()->first()
+            ];
+        }
+
+        $tag = Tag::find($id);
+        $tag->update([
+            'name' => $request->name ?? $tag->name,
+            'description' => $request->description ?? $tag->description,
+            'category_id' => $request->category_id ?? $tag->category_id
+        ]);
+
+        if ($tag) {
+            return [
+                'status_code' => 201,
+                'message' => 'Tag has been updated successfully.',
+                'data' => $tag
+            ];
+        } else {
+            return [
+                'status_code' => 400,
+                'message' => 'Tag update failed.',
             ];
         }
     }

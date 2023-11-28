@@ -15,4 +15,5 @@ Route::controller(TagController::class)->group(function () {
     Route::get('tag/{id}', 'show');
 
     Route::post('tag', 'store');
+    Route::put('tag/{id}', 'update');
 });
