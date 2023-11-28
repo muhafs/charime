@@ -22,11 +22,20 @@ class CategoryController extends Controller
 
     function show($id)
     {
-        $validator = Validator::make(['id' => $id], ['id' => 'required|numeric|exists:categories,id']);
+        $validator = Validator::make(
+            ['id' => $id],
+            ['id' => 'required|numeric|exists:categories,id'],
+            [
+                'required' => 'Category ID required',
+                'numeric' => 'Category ID must be a number',
+                'exists' => 'No Category found',
+            ]
+        );
+
         if ($validator->fails()) {
             return [
                 'status_code' => 404,
-                'message' => 'No Category found.'
+                'message' => $validator->messages()->first()
             ];
         }
 
