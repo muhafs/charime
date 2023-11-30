@@ -118,27 +118,27 @@ class CharacterController extends Controller
         }
     }
 
-    // function destroy(ShowCharacterRequest $request)
-    // {
-    //     $character = Character::find($request->id);
+    function destroy(ShowCharacterRequest $request)
+    {
+        $character = Character::find($request->id);
 
-    //     // check if character has image
-    //     if ($character->image) {
-    //         // delete iamge if exists
-    //         Storage::disk('public')->delete('character/' . $character->image);
-    //     }
+        // check if character has image
+        if ($character->image) {
+            // delete iamge if exists
+            Storage::disk('public')->delete('character/' . $character->image);
+        }
 
-    //     $character->delete();
-    //     if ($character) {
-    //         return [
-    //             'status_code' => 201,
-    //             'message' => 'Character has been deleted successfully.',
-    //         ];
-    //     } else {
-    //         return [
-    //             'status_code' => 400,
-    //             'message' => 'Character delete failed.',
-    //         ];
-    //     }
-    // }
+        $character->delete();
+        if ($character) {
+            return [
+                'status_code' => 201,
+                'message' => 'Character has been deleted successfully.',
+            ];
+        } else {
+            return [
+                'status_code' => 400,
+                'message' => 'Character delete failed.',
+            ];
+        }
+    }
 }

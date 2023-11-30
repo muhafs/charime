@@ -39,5 +39,5 @@ Route::controller(CharacterController::class)->group(function () {
     Route::post('character', 'store');
     Route::post('character/{id}', 'update');
 
-    // Route::delete('character/{id}', 'destroy');
+    Route::delete('character/{id}', 'destroy');
 });

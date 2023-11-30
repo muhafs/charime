@@ -15,4 +15,9 @@ class Character extends Model
     {
         return $this->belongsTo(Series::class);
     }
+
+    function getImageURL()
+    {
+        return $this->image ? url('storage/character/' . $this->image) : url('storage/default.png');
+    }
 }
