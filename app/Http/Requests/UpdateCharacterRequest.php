@@ -16,6 +16,7 @@ class UpdateCharacterRequest extends FormRequest
     public function rules()
     {
         return [
+            'id' => 'required|numeric|exists:characters,id',
             'name' => 'required|string',
             'brief' => 'nullable|string',
             'image' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
@@ -27,6 +28,7 @@ class UpdateCharacterRequest extends FormRequest
     public function messages()
     {
         return [
+            'id.required' => 'Character is not found',
             'name.required' => 'Character Name can\'t be Empty',
 
             'image.image' => 'Image format has to be PNG or JPEG/JPG',
