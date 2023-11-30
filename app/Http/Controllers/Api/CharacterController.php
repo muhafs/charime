@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Character;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use App\Http\Requests\ShowCharacterRequest;
-use App\Http\Requests\StoreCharacterRequest;
-use App\Http\Requests\UpdateCharacterRequest;
+use App\Http\Requests\Character\GetCharacterRequest;
+use App\Http\Requests\Character\StoreCharacterRequest;
+use App\Http\Requests\Character\UpdateCharacterRequest;
 
 class CharacterController extends Controller
 {
@@ -24,7 +22,7 @@ class CharacterController extends Controller
         ];
     }
 
-    function show(ShowCharacterRequest $request)
+    function show(GetCharacterRequest $request)
     {
         $characters = Character::find($request->id);
         return response()->json(
@@ -118,7 +116,7 @@ class CharacterController extends Controller
         }
     }
 
-    function destroy(ShowCharacterRequest $request)
+    function destroy(GetCharacterRequest $request)
     {
         $character = Character::find($request->id);
 
