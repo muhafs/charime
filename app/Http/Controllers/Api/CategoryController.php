@@ -12,20 +12,20 @@ class CategoryController extends Controller
     {
         $categories = Category::all();
 
-        return [
+        return response()->json([
             'status_code' => 200,
             'message' => 'Category list fetched successfully.',
             'data' => $categories
-        ];
+        ], 200);
     }
 
     function show(GetCategoryRequest $request)
     {
         $category = Category::find($request->id);
-        return [
+        return response()->json([
             'status_code' => 200,
             'message' => 'Category has been found successfully.',
             'data' => $category
-        ];
+        ], 200);
     }
 }

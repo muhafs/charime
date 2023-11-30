@@ -15,11 +15,14 @@ class CharacterController extends Controller
     {
         $characters = Character::all();
 
-        return [
-            'status_code' => 200,
-            'message' => 'Character list fetched successfully.',
-            'data' => $characters
-        ];
+        return response()->json(
+            [
+                'status_code' => 200,
+                'message' => 'Character list fetched successfully.',
+                'data' => $characters
+            ],
+            200
+        );
     }
 
     function show(GetCharacterRequest $request)
@@ -103,16 +106,16 @@ class CharacterController extends Controller
         ]);
 
         if ($character) {
-            return [
+            return response()->json([
                 'status_code' => 201,
                 'message' => 'Character has been updated successfully.',
                 'data' => $character
-            ];
+            ], 201);
         } else {
-            return [
+            return response()->json([
                 'status_code' => 400,
                 'message' => 'Characters update failed.',
-            ];
+            ], 400);
         }
     }
 
@@ -128,15 +131,15 @@ class CharacterController extends Controller
 
         $character->delete();
         if ($character) {
-            return [
+            return response()->json([
                 'status_code' => 201,
                 'message' => 'Character has been deleted successfully.',
-            ];
+            ], 201);
         } else {
-            return [
+            return response()->json([
                 'status_code' => 400,
                 'message' => 'Character delete failed.',
-            ];
+            ], 400);
         }
     }
 }
