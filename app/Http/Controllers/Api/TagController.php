@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreTagRequest;
+use App\Http\Requests\Tag\GetTagRequest;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\Tag\StoreTagRequest;
+use App\Http\Requests\Tag\UpdateTagRequest;
 
 class TagController extends Controller
 {
@@ -14,158 +16,106 @@ class TagController extends Controller
     {
         $tags = Tag::all();
 
-        return [
-            'status_code' => 200,
-            'message' => 'Tag list fetched successfully.',
-            'data' => $tags
-        ];
-    }
-
-    function show($id)
-    {
-        $validator = Validator::make(
-            ['id' => $id],
-            ['id' => 'required|numeric|exists:tags,id'],
+        return response()->json(
             [
-                'required' => 'Tag ID required',
-                'numeric' => 'Tag ID must be a number',
-                'exists' => 'No Tag found',
-            ]
-        );
-
-        if ($validator->fails()) {
-            return [
-                'status_code' => 404,
-                'message' => $validator->messages()->first()
-            ];
-        }
-
-        $tag = Tag::find($id);
-        return [
-            'status_code' => 200,
-            'message' => 'Tag has been found successfully.',
-            'data' => $tag
-        ];
-    }
-
-    function store(Request $request)
-    {
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'name' => 'required|string|unique:tags,name',
-                'description' => 'nullable|string',
-                'category_id' => 'required|numeric|exists:categories,id'
+                'status_code' => 200,
+                'message' => 'Tag list fetched successfully.',
+                'data' => $tags
             ],
-            [
-                'name.required' => 'Tag Name can\'t be Empty',
-                'name.unique' => 'This name has already taken',
-
-                'category_id.required' => 'Category is required',
-                'category_id.numeric' => 'Category ID must be a number',
-                'category_id.exists' => 'Category is not found'
-            ]
+            200
         );
+    }
 
-        if ($validator->fails()) {
-            return [
-                'status_code' => 400,
-                'message' => $validator->messages()->first()
-            ];
-        }
-
-        $tag = Tag::create($request->all());
-        if ($tag) {
-            return [
-                'status_code' => 201,
-                'message' => 'Tag has been created successfully.',
+    function show(GetTagRequest $request)
+    {
+        $tag = Tag::find($request->id);
+        return response()->json(
+            [
+                'status_code' => 200,
+                'message' => 'Tag has been found successfully.',
                 'data' => $tag
-            ];
-        } else {
-            return [
-                'status_code' => 400,
-                'message' => 'Tag create failed.',
-            ];
-        }
+            ],
+            200
+        );
     }
 
-    function update(Request $request, $id)
+    function store(StoreTagRequest $request)
     {
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'name' => 'required|string|unique:tags,name,' . $id,
-                'description' => 'nullable|string',
-                'category_id' => 'required|numeric|exists:categories,id'
-            ],
-            [
-                'name.required' => 'Tag name can\'t be Empty',
-                'name.unique' => 'This name has already taken',
-
-                'category_id.required' => 'Category is required',
-                'category_id.numeric' => 'Category ID must be a number',
-                'category_id.exists' => 'Category is not found'
-            ]
-        );
-
-        if ($validator->fails()) {
-            return [
-                'status_code' => 400,
-                'message' => $validator->messages()->first()
-            ];
-        }
-
-        $tag = Tag::find($id);
-        $tag->update([
-            'name' => $request->name ?? $tag->name,
-            'description' => $request->description ?? $tag->description,
-            'category_id' => $request->category_id ?? $tag->category_id
+        $tag = Tag::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'category_id' => $request->category_id
         ]);
 
         if ($tag) {
-            return [
-                'status_code' => 201,
-                'message' => 'Tag has been updated successfully.',
-                'data' => $tag
-            ];
+            return response()->json(
+                [
+                    'status_code' => 201,
+                    'message' => 'Tag has been created successfully.',
+                    'data' => $tag
+                ],
+                201
+            );
         } else {
-            return [
-                'status_code' => 400,
-                'message' => 'Tag update failed.',
-            ];
+            return response()->json(
+                [
+                    'status_code' => 400,
+                    'message' => 'Tag create failed.'
+                ],
+                400
+            );
         }
     }
 
-    function destroy($id)
+    function update(UpdateTagRequest $request)
     {
-        $validator = Validator::make(
-            ['id' => $id],
-            ['id' => 'required|numeric|exists:tags,id'],
-            [
-                'id.required' => 'Tag is required',
-                'id.numeric' => 'Tag ID must be a number',
-                'id.exists' => 'Tag is not found'
-            ]
-        );
+        $tag = Tag::find($request->id);
 
-        if ($validator->fails()) {
-            return [
-                'status_code' => 404,
-                'message' => $validator->messages()->first()
-            ];
-        }
+        $tag->update([
+            'name' => $request->name ?? $tag->name,
+            'description' => $request->description ?? $tag->description,
+            'category_id' => $request->category_id ?? $tag->category_id,
+        ]);
 
-        $tag = Tag::destroy($id);
         if ($tag) {
-            return [
-                'status_code' => 201,
-                'message' => 'Tag has been deleted successfully.',
-            ];
+            return response()->json(
+                [
+                    'status_code' => 201,
+                    'message' => 'Tag has been updated successfully.',
+                    'data' => $tag
+                ],
+                201
+            );
         } else {
-            return [
-                'status_code' => 400,
-                'message' => 'Tag delete failed.',
-            ];
+            return response()->json(
+                [
+                    'status_code' => 400,
+                    'message' => 'Tag update failed.',
+                ],
+                400
+            );
+        }
+    }
+
+    function destroy(GetTagRequest $request)
+    {
+        $tag = Tag::destroy($request->id);
+        if ($tag) {
+            return response()->json(
+                [
+                    'status_code' => 201,
+                    'message' => 'Tag has been deleted successfully.',
+                ],
+                201
+            );
+        } else {
+            return response()->json(
+                [
+                    'status_code' => 400,
+                    'message' => 'Tag delete failed.',
+                ],
+                400
+            );
         }
     }
 }
