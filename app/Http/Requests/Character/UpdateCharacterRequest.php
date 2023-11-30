@@ -13,6 +13,13 @@ class UpdateCharacterRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'id' => $this->route('id'),
+        ]);
+    }
+
     public function rules()
     {
         return [

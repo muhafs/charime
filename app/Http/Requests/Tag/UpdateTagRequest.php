@@ -13,11 +13,18 @@ class UpdateTagRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'id' => $this->route('id'),
+        ]);
+    }
+
     public function rules()
     {
         return [
             'id' => 'required|numeric|exists:tags,id',
-            'name' => 'required|string',
+            'name' => 'required|string|unique:tags,name,' . $this->id,
             'description' => 'nullable|string',
             'category_id' => 'required|numeric|exists:categories,id'
         ];
