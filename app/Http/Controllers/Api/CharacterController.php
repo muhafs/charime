@@ -35,46 +35,46 @@ class CharacterController extends Controller
         );
     }
 
-    // function store(StoreCharacterRequest $request)
-    // {
-    //     // check is request has image
-    //     if ($request->hasFile('image')) {
-    //         // create unique filename
-    //         $imageName = 'CHARACTER_' . time() . '.' . $request->image->extension();
+    function store(StoreCharacterRequest $request)
+    {
+        // check is request has image
+        if ($request->hasFile('image')) {
+            // create unique filename
+            $imageName = 'CHARACTER_' . time() . '.' . $request->image->extension();
 
-    //         // store image in APP
-    //         $request->file('image')->storeAs('character', $imageName, 'public');
-    //     }
+            // store image in APP
+            $request->file('image')->storeAs('character', $imageName, 'public');
+        }
 
-    //     $characters = Character::create([
-    //         'name' => $request->name,
-    //         'brief' => $request->brief,
-    //         'type' => $request->type,
-    //         'series_id' => $request->series_id,
+        $characters = Character::create([
+            'name' => $request->name,
+            'brief' => $request->brief,
+            'type' => $request->type,
+            'series_id' => $request->series_id,
 
-    //         // store image in database if exists
-    //         'image' => $imageName ?? null
-    //     ]);
+            // store image in database if exists
+            'image' => $imageName ?? null
+        ]);
 
-    //     if ($characters) {
-    //         return response()->json(
-    //             [
-    //                 'status_code' => 201,
-    //                 'message' => 'Character has been created successfully.',
-    //                 'data' => $characters
-    //             ],
-    //             201
-    //         );
-    //     } else {
-    //         return response()->json(
-    //             [
-    //                 'status_code' => 400,
-    //                 'message' => 'Character create failed.'
-    //             ],
-    //             400
-    //         );
-    //     }
-    // }
+        if ($characters) {
+            return response()->json(
+                [
+                    'status_code' => 201,
+                    'message' => 'Character has been created successfully.',
+                    'data' => $characters
+                ],
+                201
+            );
+        } else {
+            return response()->json(
+                [
+                    'status_code' => 400,
+                    'message' => 'Character create failed.'
+                ],
+                400
+            );
+        }
+    }
 
     // function update(Request $request, $id)
     // {
