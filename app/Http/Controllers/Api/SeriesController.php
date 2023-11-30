@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Series;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class SeriesController extends Controller
@@ -58,15 +59,13 @@ class SeriesController extends Controller
                 'category_id' => 'required|numeric|exists:categories,id'
             ],
             [
-                'name.required' => 'Series Name can\'t be Empty',
-                'name.unique' => 'This name has already taken',
+                'title.required' => 'Series Title can\'t be Empty',
 
                 'image.image' => 'Image format has to be PNG or JPEG/JPG',
                 'image.max' => 'Image is too large',
 
                 'category_id.required' => 'Category is required',
-                'category_id.numeric' => 'Category ID must be a number',
-                'category_id.exists' => 'Category is not found'
+                'category_id.*' => 'Category is not found'
             ]
         );
 
@@ -90,6 +89,7 @@ class SeriesController extends Controller
             'title' => $request->title,
             'synopsis' => $request->synopsis,
             'category_id' => $request->category_id,
+
             // store image in database if exists
             'image' => $imageName ?? null
         ]);
@@ -108,52 +108,70 @@ class SeriesController extends Controller
         }
     }
 
-    // function update(Request $request, $id)
-    // {
-    //     $validator = Validator::make(
-    //         $request->all(),
-    //         [
-    //             'name' => 'required|string|unique:series,name,' . $id,
-    //             'description' => 'nullable|string',
-    //             'category_id' => 'required|numeric|exists:categories,id'
-    //         ],
-    //         [
-    //             'name.required' => 'Series name can\'t be Empty',
-    //             'name.unique' => 'This name has already taken',
+    function update(Request $request, $id)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'title' => 'required|string',
+                'synopsis' => 'nullable|string',
+                'image' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
+                'category_id' => 'required|numeric|exists:categories,id'
+            ],
+            [
+                'title.required' => 'Series Title can\'t be Empty',
 
-    //             'category_id.required' => 'Category is required',
-    //             'category_id.numeric' => 'Category ID must be a number',
-    //             'category_id.exists' => 'Category is not found'
-    //         ]
-    //     );
+                'image.image' => 'Image format has to be PNG or JPEG/JPG',
+                'image.max' => 'Image is too large',
 
-    //     if ($validator->fails()) {
-    //         return [
-    //             'status_code' => 400,
-    //             'message' => $validator->messages()->first()
-    //         ];
-    //     }
+                'category_id.required' => 'Category is required',
+                'category_id.*' => 'Category is not found'
+            ]
+        );
 
-    //     $series = Series::find($id);
-    //     $series->update([
-    //         'name' => $request->name ?? $series->name,
-    //         'description' => $request->description ?? $series->description,
-    //         'category_id' => $request->category_id ?? $series->category_id
-    //     ]);
+        if ($validator->fails()) {
+            return [
+                'status_code' => 400,
+                'message' => $validator->messages()->first()
+            ];
+        }
 
-    //     if ($series) {
-    //         return [
-    //             'status_code' => 201,
-    //             'message' => 'Series has been updated successfully.',
-    //             'data' => $series
-    //         ];
-    //     } else {
-    //         return [
-    //             'status_code' => 400,
-    //             'message' => 'Series update failed.',
-    //         ];
-    //     }
-    // }
+        $series = Series::find($id);
+
+        // check is request has image
+        if ($request->hasFile('image')) {
+            // create unique filename
+            $imageName = 'SERIES_' . time() . '.' . $request->image->extension();
+
+            // store image in APP
+            $request->file('image')->storeAs('series', $imageName, 'public');
+
+            // delete old image
+            Storage::disk('public')->delete('series/' . $series->image);
+        }
+
+        $series->update([
+            'title' => $request->title ?? $series->title,
+            'synopsis' => $request->synopsis ?? $series->synopsis,
+            'category_id' => $request->category_id ?? $series->category_id,
+
+            // store image in database if exists, or store the old one
+            'image' => $imageName ?? $series->image
+        ]);
+
+        if ($series) {
+            return [
+                'status_code' => 201,
+                'message' => 'Series has been updated successfully.',
+                'data' => $series
+            ];
+        } else {
+            return [
+                'status_code' => 400,
+                'message' => 'Series update failed.',
+            ];
+        }
+    }
 
     // function destroy($id)
     // {
