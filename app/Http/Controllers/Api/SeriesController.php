@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Series;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use function PHPUnit\Framework\isNull;
-use function PHPUnit\Framework\isEmpty;
-
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\Series\GetSeriesRequest;
+use App\Http\Requests\Series\StoreSeriesRequest;
+use App\Http\Requests\Series\UpdateSeriesRequest;
 
 class SeriesController extends Controller
 {
@@ -17,68 +15,31 @@ class SeriesController extends Controller
     {
         $series = Series::all();
 
-        return [
-            'status_code' => 200,
-            'message' => 'Series list fetched successfully.',
-            'data' => $series
-        ];
-    }
-
-    function show($id)
-    {
-        $validator = Validator::make(
-            ['id' => $id],
-            ['id' => 'required|numeric|exists:series,id'],
+        return response()->json(
             [
-                'required' => 'Series ID required',
-                'numeric' => 'Series ID must be a number',
-                'exists' => 'No Series found',
-            ]
-        );
-
-        if ($validator->fails()) {
-            return [
-                'status_code' => 404,
-                'message' => $validator->messages()->first()
-            ];
-        }
-
-        $series = Series::find($id);
-        return [
-            'status_code' => 200,
-            'message' => 'Series has been found successfully.',
-            'data' => $series
-        ];
-    }
-
-    function store(Request $request)
-    {
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'title' => 'required|string',
-                'synopsis' => 'nullable|string',
-                'image' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
-                'category_id' => 'required|numeric|exists:categories,id'
+                'status_code' => 200,
+                'message' => 'Series list fetched successfully.',
+                'data' => $series
             ],
-            [
-                'title.required' => 'Series Title can\'t be Empty',
-
-                'image.image' => 'Image format has to be PNG or JPEG/JPG',
-                'image.max' => 'Image is too large',
-
-                'category_id.required' => 'Category is required',
-                'category_id.*' => 'Category is not found'
-            ]
+            200
         );
+    }
 
-        if ($validator->fails()) {
-            return [
-                'status_code' => 400,
-                'message' => $validator->messages()->first()
-            ];
-        }
+    function show(GetSeriesRequest $request)
+    {
+        $series = Series::find($request->id);
+        return response()->json(
+            [
+                'status_code' => 200,
+                'message' => 'Series has been found successfully.',
+                'data' => $series
+            ],
+            200
+        );
+    }
 
+    function store(StoreSeriesRequest $request)
+    {
         // check is request has image
         if ($request->hasFile('image')) {
             // create unique filename
@@ -98,48 +59,28 @@ class SeriesController extends Controller
         ]);
 
         if ($series) {
-            return [
-                'status_code' => 201,
-                'message' => 'Series has been created successfully.',
-                'data' => $series
-            ];
+            return response()->json(
+                [
+                    'status_code' => 201,
+                    'message' => 'Series has been created successfully.',
+                    'data' => $series
+                ],
+                201
+            );
         } else {
-            return [
-                'status_code' => 400,
-                'message' => 'Series create failed.',
-            ];
+            return response()->json(
+                [
+                    'status_code' => 400,
+                    'message' => 'Series create failed.'
+                ],
+                400
+            );
         }
     }
 
-    function update(Request $request, $id)
+    function update(UpdateSeriesRequest $request)
     {
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'title' => 'required|string',
-                'synopsis' => 'nullable|string',
-                'image' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
-                'category_id' => 'required|numeric|exists:categories,id'
-            ],
-            [
-                'title.required' => 'Series Title can\'t be Empty',
-
-                'image.image' => 'Image format has to be PNG or JPEG/JPG',
-                'image.max' => 'Image is too large',
-
-                'category_id.required' => 'Category is required',
-                'category_id.*' => 'Category is not found'
-            ]
-        );
-
-        if ($validator->fails()) {
-            return [
-                'status_code' => 400,
-                'message' => $validator->messages()->first()
-            ];
-        }
-
-        $series = Series::find($id);
+        $series = Series::find($request->id);
 
         // check is request has image
         if ($request->hasFile('image')) {
@@ -163,39 +104,28 @@ class SeriesController extends Controller
         ]);
 
         if ($series) {
-            return [
-                'status_code' => 201,
-                'message' => 'Series has been updated successfully.',
-                'data' => $series
-            ];
+            return response()->json(
+                [
+                    'status_code' => 201,
+                    'message' => 'Series has been updated successfully.',
+                    'data' => $series
+                ],
+                201
+            );
         } else {
-            return [
-                'status_code' => 400,
-                'message' => 'Series update failed.',
-            ];
+            return response()->json(
+                [
+                    'status_code' => 400,
+                    'message' => 'Series update failed.',
+                ],
+                400
+            );
         }
     }
 
-    function destroy($id)
+    function destroy(GetSeriesRequest $request)
     {
-        $validator = Validator::make(
-            ['id' => $id],
-            ['id' => 'required|numeric|exists:series,id'],
-            [
-                'id.required' => 'Series is required',
-                'id.numeric' => 'Series ID must be a number',
-                'id.exists' => 'Series is not found'
-            ]
-        );
-
-        if ($validator->fails()) {
-            return [
-                'status_code' => 404,
-                'message' => $validator->messages()->first()
-            ];
-        }
-
-        $series = Series::find($id);
+        $series = Series::find($request->id);
 
         // check if series has image
         if ($series->image) {
@@ -205,15 +135,22 @@ class SeriesController extends Controller
 
         $series->delete();
         if ($series) {
-            return [
-                'status_code' => 201,
-                'message' => 'Series has been deleted successfully.',
-            ];
+            return response()->json(
+                [
+                    'status_code' => 201,
+                    'message' => 'Series has been deleted successfully.',
+                    'data' => $series
+                ],
+                201
+            );
         } else {
-            return [
-                'status_code' => 400,
-                'message' => 'Series delete failed.',
-            ];
+            return response()->json(
+                [
+                    'status_code' => 400,
+                    'message' => 'Series delete failed.',
+                ],
+                400
+            );
         }
     }
 }
