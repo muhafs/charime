@@ -26,8 +26,8 @@ class Series extends Model
         return $this->hasMany(Character::class);
     }
 
-    // function getImageURL()
-    // {
-    //     return $this->image ? url('storage/series/' . $this->image) : url('storage/default.png');
-    // }
+    function getImageURL()
+    {
+        return $this->image ? url('storage/series/' . $this->image) : url('storage/default.png');
+    }
 }

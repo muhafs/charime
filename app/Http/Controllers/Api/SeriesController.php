@@ -47,66 +47,66 @@ class SeriesController extends Controller
         ];
     }
 
-    // function store(Request $request)
-    // {
-    //     $validator = Validator::make(
-    //         $request->all(),
-    //         [
-    //             'title' => 'required|string',
-    //             'synopsis' => 'nullable|string',
-    //             'image' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
-    //             'category_id' => 'required|numeric|exists:categories,id'
-    //         ],
-    //         [
-    //             'name.required' => 'Series Name can\'t be Empty',
-    //             'name.unique' => 'This name has already taken',
+    function store(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'title' => 'required|string',
+                'synopsis' => 'nullable|string',
+                'image' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
+                'category_id' => 'required|numeric|exists:categories,id'
+            ],
+            [
+                'name.required' => 'Series Name can\'t be Empty',
+                'name.unique' => 'This name has already taken',
 
-    //             'image.image' => 'Image format has to be PNG or JPEG/JPG',
-    //             'image.max' => 'Image is too large',
+                'image.image' => 'Image format has to be PNG or JPEG/JPG',
+                'image.max' => 'Image is too large',
 
-    //             'category_id.required' => 'Category is required',
-    //             'category_id.numeric' => 'Category ID must be a number',
-    //             'category_id.exists' => 'Category is not found'
-    //         ]
-    //     );
+                'category_id.required' => 'Category is required',
+                'category_id.numeric' => 'Category ID must be a number',
+                'category_id.exists' => 'Category is not found'
+            ]
+        );
 
-    //     if ($validator->fails()) {
-    //         return [
-    //             'status_code' => 400,
-    //             'message' => $validator->messages()->first()
-    //         ];
-    //     }
+        if ($validator->fails()) {
+            return [
+                'status_code' => 400,
+                'message' => $validator->messages()->first()
+            ];
+        }
 
-    //     // check is request has image
-    //     if ($request->hasFile('image')) {
-    //         // create unique filename
-    //         $imageName = 'SERIES_' . time() . '.' . $request->image->extension();
+        // check is request has image
+        if ($request->hasFile('image')) {
+            // create unique filename
+            $imageName = 'SERIES_' . time() . '.' . $request->image->extension();
 
-    //         // store image in APP
-    //         $request->file('image')->storeAs('series', $imageName, 'public');
-    //     }
+            // store image in APP
+            $request->file('image')->storeAs('series', $imageName, 'public');
+        }
 
-    //     $series = Series::create([
-    //         'title' => $request->title,
-    //         'synopsis' => $request->synopsis,
-    //         'category_id' => $request->category_id,
-    //         // store image in database if exists
-    //         'image' => $imageName ?? null
-    //     ]);
+        $series = Series::create([
+            'title' => $request->title,
+            'synopsis' => $request->synopsis,
+            'category_id' => $request->category_id,
+            // store image in database if exists
+            'image' => $imageName ?? null
+        ]);
 
-    //     if ($series) {
-    //         return [
-    //             'status_code' => 201,
-    //             'message' => 'Series has been created successfully.',
-    //             'data' => $series
-    //         ];
-    //     } else {
-    //         return [
-    //             'status_code' => 400,
-    //             'message' => 'Series create failed.',
-    //         ];
-    //     }
-    // }
+        if ($series) {
+            return [
+                'status_code' => 201,
+                'message' => 'Series has been created successfully.',
+                'data' => $series
+            ];
+        } else {
+            return [
+                'status_code' => 400,
+                'message' => 'Series create failed.',
+            ];
+        }
+    }
 
     // function update(Request $request, $id)
     // {

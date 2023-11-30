@@ -25,7 +25,7 @@ Route::controller(SeriesController::class)->group(function () {
     Route::get('series', 'index');
     Route::get('series/{id}', 'show');
 
-    // Route::post('series', 'store');
+    Route::post('series', 'store');
     // Route::put('series/{id}', 'update');
 
     // Route::delete('series/{id}', 'destroy');
