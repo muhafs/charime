@@ -28,5 +28,5 @@ Route::controller(SeriesController::class)->group(function () {
     Route::post('series', 'store');
     Route::post('series/{id}', 'update');
 
-    // Route::delete('series/{id}', 'destroy');
+    Route::delete('series/{id}', 'destroy');
 });

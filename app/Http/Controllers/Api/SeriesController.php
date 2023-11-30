@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Models\Series;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use function PHPUnit\Framework\isNull;
+use function PHPUnit\Framework\isEmpty;
+
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -173,36 +176,44 @@ class SeriesController extends Controller
         }
     }
 
-    // function destroy($id)
-    // {
-    //     $validator = Validator::make(
-    //         ['id' => $id],
-    //         ['id' => 'required|numeric|exists:series,id'],
-    //         [
-    //             'id.required' => 'Series is required',
-    //             'id.numeric' => 'Series ID must be a number',
-    //             'id.exists' => 'Series is not found'
-    //         ]
-    //     );
+    function destroy($id)
+    {
+        $validator = Validator::make(
+            ['id' => $id],
+            ['id' => 'required|numeric|exists:series,id'],
+            [
+                'id.required' => 'Series is required',
+                'id.numeric' => 'Series ID must be a number',
+                'id.exists' => 'Series is not found'
+            ]
+        );
 
-    //     if ($validator->fails()) {
-    //         return [
-    //             'status_code' => 404,
-    //             'message' => $validator->messages()->first()
-    //         ];
-    //     }
+        if ($validator->fails()) {
+            return [
+                'status_code' => 404,
+                'message' => $validator->messages()->first()
+            ];
+        }
 
-    //     $series = Series::destroy($id);
-    //     if ($series) {
-    //         return [
-    //             'status_code' => 201,
-    //             'message' => 'Series has been deleted successfully.',
-    //         ];
-    //     } else {
-    //         return [
-    //             'status_code' => 400,
-    //             'message' => 'Series delete failed.',
-    //         ];
-    //     }
-    // }
+        $series = Series::find($id);
+
+        // check if series has image
+        if ($series->image) {
+            // delete iamge if exists
+            Storage::disk('public')->delete('series/' . $series->image);
+        }
+
+        $series->delete();
+        if ($series) {
+            return [
+                'status_code' => 201,
+                'message' => 'Series has been deleted successfully.',
+            ];
+        } else {
+            return [
+                'status_code' => 400,
+                'message' => 'Series delete failed.',
+            ];
+        }
+    }
 }
