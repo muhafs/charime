@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\SeriesController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\CharacterController;
 
 Route::controller(CategoryController::class)->group(function () {
     Route::get('category', 'index');
@@ -29,4 +30,14 @@ Route::controller(SeriesController::class)->group(function () {
     Route::post('series/{id}', 'update');
 
     Route::delete('series/{id}', 'destroy');
+});
+
+Route::controller(CharacterController::class)->group(function () {
+    Route::get('character', 'index');
+    Route::get('character/{id}', 'show');
+
+    // Route::post('character', 'store');
+    // Route::post('character/{id}', 'update');
+
+    // Route::delete('character/{id}', 'destroy');
 });
