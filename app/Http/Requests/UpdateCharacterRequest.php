@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class StoreCharacterRequest extends FormRequest
+class UpdateCharacterRequest extends FormRequest
 {
     public function authorize()
     {

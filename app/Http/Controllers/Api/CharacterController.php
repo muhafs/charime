@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Models\Character;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\ShowCharacterRequest;
 use App\Http\Requests\StoreCharacterRequest;
+use App\Http\Requests\UpdateCharacterRequest;
 
 class CharacterController extends Controller
 {
@@ -76,108 +78,66 @@ class CharacterController extends Controller
         }
     }
 
-    // function update(Request $request, $id)
+    function update(UpdateCharacterRequest $request, $id)
+    {
+        $character = Character::find($id);
+
+        // check is request has image
+        if ($request->hasFile('image')) {
+            // create unique filename
+            $imageName = 'CHARACTER_' . time() . '.' . $request->image->extension();
+
+            // store image in APP
+            $request->file('image')->storeAs('character', $imageName, 'public');
+
+            // delete old image
+            Storage::disk('public')->delete('character/' . $character->image);
+        }
+
+        $character->update([
+            'name' => $request->name ?? $character->name,
+            'brief' => $request->brief ?? $character->brief,
+            'type' => $request->type ?? $character->type,
+            'series_id' => $request->series_id ?? $character->series_id,
+
+            // store image in database if exists, or store the old one
+            'image' => $imageName ?? $character->image
+        ]);
+
+        if ($character) {
+            return [
+                'status_code' => 201,
+                'message' => 'Character has been updated successfully.',
+                'data' => $character
+            ];
+        } else {
+            return [
+                'status_code' => 400,
+                'message' => 'Characters update failed.',
+            ];
+        }
+    }
+
+    // function destroy(ShowCharacterRequest $request)
     // {
-    //     $validator = Validator::make(
-    //         $request->all(),
-    //         [
-    //             'title' => 'required|string',
-    //             'synopsis' => 'nullable|string',
-    //             'image' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
-    //             'category_id' => 'required|numeric|exists:categories,id'
-    //         ],
-    //         [
-    //             'title.required' => 'Characters Title can\'t be Empty',
+    //     $character = Character::find($request->id);
 
-    //             'image.image' => 'Image format has to be PNG or JPEG/JPG',
-    //             'image.max' => 'Image is too large',
-
-    //             'category_id.required' => 'Category is required',
-    //             'category_id.*' => 'Category is not found'
-    //         ]
-    //     );
-
-    //     if ($validator->fails()) {
-    //         return [
-    //             'status_code' => 400,
-    //             'message' => $validator->messages()->first()
-    //         ];
-    //     }
-
-    //     $characters = Character::find($id);
-
-    //     // check is request has image
-    //     if ($request->hasFile('image')) {
-    //         // create unique filename
-    //         $imageName = 'CHARACTERS_' . time() . '.' . $request->image->extension();
-
-    //         // store image in APP
-    //         $request->file('image')->storeAs('characters', $imageName, 'public');
-
-    //         // delete old image
-    //         Storage::disk('public')->delete('characters/' . $characters->image);
-    //     }
-
-    //     $characters->update([
-    //         'title' => $request->title ?? $characters->title,
-    //         'synopsis' => $request->synopsis ?? $characters->synopsis,
-    //         'category_id' => $request->category_id ?? $characters->category_id,
-
-    //         // store image in database if exists, or store the old one
-    //         'image' => $imageName ?? $characters->image
-    //     ]);
-
-    //     if ($characters) {
-    //         return [
-    //             'status_code' => 201,
-    //             'message' => 'Characters has been updated successfully.',
-    //             'data' => $characters
-    //         ];
-    //     } else {
-    //         return [
-    //             'status_code' => 400,
-    //             'message' => 'Characters update failed.',
-    //         ];
-    //     }
-    // }
-
-    // function destroy($id)
-    // {
-    //     $validator = Validator::make(
-    //         ['id' => $id],
-    //         ['id' => 'required|numeric|exists:characters,id'],
-    //         [
-    //             'id.required' => 'Characters is required',
-    //             'id.numeric' => 'Characters ID must be a number',
-    //             'id.exists' => 'Characters is not found'
-    //         ]
-    //     );
-
-    //     if ($validator->fails()) {
-    //         return [
-    //             'status_code' => 404,
-    //             'message' => $validator->messages()->first()
-    //         ];
-    //     }
-
-    //     $characters = Character::find($id);
-
-    //     // check if characters has image
-    //     if ($characters->image) {
+    //     // check if character has image
+    //     if ($character->image) {
     //         // delete iamge if exists
-    //         Storage::disk('public')->delete('characters/' . $characters->image);
+    //         Storage::disk('public')->delete('character/' . $character->image);
     //     }
 
-    //     $characters->delete();
-    //     if ($characters) {
+    //     $character->delete();
+    //     if ($character) {
     //         return [
     //             'status_code' => 201,
-    //             'message' => 'Characters has been deleted successfully.',
+    //             'message' => 'Character has been deleted successfully.',
     //         ];
     //     } else {
     //         return [
     //             'status_code' => 400,
-    //             'message' => 'Characters delete failed.',
+    //             'message' => 'Character delete failed.',
     //         ];
     //     }
     // }
