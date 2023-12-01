@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create(
             'series_tag',
             function (Blueprint $table) {
-                $table->foreignId('series_id')->constrained('series');
-                $table->foreignId('tag_id')->constrained('tags');
+                $table->foreignId('series_id')->constrained('series')->cascadeOnDelete()->cascadeOnUpdate();
+                $table->foreignId('tag_id')->constrained('tags')->cascadeOnDelete()->cascadeOnUpdate();
             }
         );
     }

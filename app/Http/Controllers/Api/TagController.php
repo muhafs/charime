@@ -45,6 +45,8 @@ class TagController extends Controller
             'category_id' => $request->category_id
         ]);
 
+        $tag->series()->attach($request->series);
+
         if ($tag) {
             return response()->json(
                 [

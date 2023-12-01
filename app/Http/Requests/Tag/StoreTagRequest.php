@@ -18,7 +18,10 @@ class StoreTagRequest extends FormRequest
         return [
             'name' => 'required|string|unique:tags,name',
             'description' => 'nullable|string',
-            'category_id' => 'required|numeric|exists:categories,id'
+            'category_id' => 'required|numeric|exists:categories,id',
+
+            'series' => 'nullable|array',
+            'series.*' => 'sometimes|numeric|exists:series,id|distinct'
         ];
     }
 
@@ -30,7 +33,11 @@ class StoreTagRequest extends FormRequest
 
             'category_id.required' => 'Category is required',
             'category_id.numeric' => 'Category ID must be a number',
-            'category_id.exists' => 'Category is not found'
+            'category_id.exists' => 'Category is not found',
+
+            'series.array' => 'Series is not valid',
+            'series.*.distinct' => 'some Series is duplicated',
+            'series.*' => 'some Series is not available',
         ];
     }
 
