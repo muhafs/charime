@@ -58,6 +58,8 @@ class SeriesController extends Controller
             'image' => $imageName ?? null
         ]);
 
+        $series->tags()->attach($request->tags);
+
         if ($series) {
             return response()->json(
                 [

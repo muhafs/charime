@@ -19,7 +19,10 @@ class StoreSeriesRequest extends FormRequest
             'title' => 'required|string',
             'synopsis' => 'nullable|string',
             'image' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
-            'category_id' => 'required|numeric|exists:categories,id'
+            'category_id' => 'required|numeric|exists:categories,id',
+
+            'tags' => 'nullable|array',
+            'tags.*' => 'sometimes|numeric|exists:tags,id|distinct'
         ];
     }
 
@@ -32,7 +35,11 @@ class StoreSeriesRequest extends FormRequest
             'image.max' => 'Image is too large',
 
             'category_id.required' => 'Category is required',
-            'category_id.*' => 'Category is not found'
+            'category_id.*' => 'Category is not found',
+
+            'tags.array' => 'Tags is not valid',
+            'tags.*.distinct' => 'some Tags are duplicated',
+            'tags.*' => 'some Tags are not available',
         ];
     }
 
