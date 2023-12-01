@@ -26,7 +26,10 @@ class UpdateTagRequest extends FormRequest
             'id' => 'required|numeric|exists:tags,id',
             'name' => 'required|string|unique:tags,name,' . $this->id,
             'description' => 'nullable|string',
-            'category_id' => 'required|numeric|exists:categories,id'
+            'category_id' => 'required|numeric|exists:categories,id',
+
+            'series' => 'nullable|array',
+            'series.*' => 'sometimes|numeric|exists:series,id|distinct'
         ];
     }
 
@@ -37,7 +40,11 @@ class UpdateTagRequest extends FormRequest
             'name.required' => 'Tag Name can\'t be Empty',
 
             'category_id.required' => 'Category is required',
-            'category_id.*' => 'Category is not found'
+            'category_id.*' => 'Category is not found',
+
+            'series.array' => 'Series is not valid',
+            'series.*.distinct' => 'some Series is duplicated',
+            'series.*' => 'some Series is not available',
         ];
     }
 

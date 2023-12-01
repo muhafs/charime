@@ -77,6 +77,8 @@ class TagController extends Controller
             'category_id' => $request->category_id ?? $tag->category_id,
         ]);
 
+        $tag->series()->sync($request->series);
+
         if ($tag) {
             return response()->json(
                 [
