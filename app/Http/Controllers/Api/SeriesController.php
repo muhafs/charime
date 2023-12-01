@@ -105,6 +105,8 @@ class SeriesController extends Controller
             'image' => $imageName ?? $series->image
         ]);
 
+        $series->tags()->sync($request->tags);
+
         if ($series) {
             return response()->json(
                 [
