@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Tag;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Tag\TagResource;
 use App\Http\Requests\Tag\GetTagRequest;
 use App\Http\Requests\Tag\StoreTagRequest;
 use App\Http\Requests\Tag\UpdateTagRequest;
+use App\Http\Resources\Tag\TagListResource;
 
 class TagController extends Controller
 {
@@ -18,7 +20,7 @@ class TagController extends Controller
             [
                 'status_code' => 200,
                 'message' => 'Tag list fetched successfully.',
-                'data' => $tags
+                'data' => TagListResource::collection($tags)
             ],
             200
         );
@@ -31,7 +33,7 @@ class TagController extends Controller
             [
                 'status_code' => 200,
                 'message' => 'Tag has been found successfully.',
-                'data' => $tag
+                'data' => new TagResource($tag)
             ],
             200
         );
