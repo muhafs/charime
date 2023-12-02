@@ -29,7 +29,7 @@ class SeriesController extends Controller
 
     function show(GetSeriesRequest $request)
     {
-        $series = Series::find($request->id);
+        $series = Series::with('characters')->find($request->id);
         return response()->json(
             [
                 'status_code' => 200,

@@ -20,6 +20,8 @@ class SeriesResource extends JsonResource
             "title" => $this->title,
             "synopsis" => $this->synopsis,
             "category" => new CategoryResource($this->category),
+
+            'characters' => $this->whenLoaded('characters')
         ];
     }
 }
