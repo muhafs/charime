@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Category;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Category\CategoryResource;
 use App\Http\Requests\Category\GetCategoryRequest;
+use App\Http\Resources\Category\CategoryListResource;
 
 class CategoryController extends Controller
 {
@@ -15,7 +17,7 @@ class CategoryController extends Controller
         return response()->json([
             'status_code' => 200,
             'message' => 'Category list fetched successfully.',
-            'data' => $categories
+            'data' => CategoryListResource::collection($categories)
         ], 200);
     }
 
@@ -25,7 +27,7 @@ class CategoryController extends Controller
         return response()->json([
             'status_code' => 200,
             'message' => 'Category has been found successfully.',
-            'data' => $category
+            'data' => new CategoryResource($category)
         ], 200);
     }
 }
