@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Models\Series;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Resources\Series\SeriesResource;
 use App\Http\Requests\Series\GetSeriesRequest;
 use App\Http\Requests\Series\StoreSeriesRequest;
 use App\Http\Requests\Series\UpdateSeriesRequest;
+use App\Http\Resources\Series\SeriesListResource;
 
 class SeriesController extends Controller
 {
@@ -19,7 +21,7 @@ class SeriesController extends Controller
             [
                 'status_code' => 200,
                 'message' => 'Series list fetched successfully.',
-                'data' => $series
+                'data' => SeriesListResource::collection($series)
             ],
             200
         );
@@ -32,7 +34,7 @@ class SeriesController extends Controller
             [
                 'status_code' => 200,
                 'message' => 'Series has been found successfully.',
-                'data' => $series
+                'data' => new SeriesResource($series)
             ],
             200
         );

@@ -23,7 +23,7 @@ class CategoryController extends Controller
 
     function show(GetCategoryRequest $request)
     {
-        $category = Category::find($request->id);
+        $category = Category::with('tags', 'series')->find($request->id);
         return response()->json([
             'status_code' => 200,
             'message' => 'Category has been found successfully.',
