@@ -52,8 +52,8 @@ class SeriesController extends Controller
         }
 
         $series = Series::create([
-            'title' => $request->title,
-            'synopsis' => $request->synopsis,
+            'title' => str()->title($request->title),
+            'synopsis' => str()->ucfirst($request->synopsis),
             'category_id' => $request->category_id,
 
             // store image in database if exists
@@ -99,8 +99,8 @@ class SeriesController extends Controller
         }
 
         $series->update([
-            'title' => $request->title ?? $series->title,
-            'synopsis' => $request->synopsis ?? $series->synopsis,
+            'title' => str()->title($request->title ?? $series->title),
+            'synopsis' => str()->ucfirst($request->synopsis ?? $series->synopsis),
             'category_id' => $request->category_id ?? $series->category_id,
 
             // store image in database if exists, or store the old one

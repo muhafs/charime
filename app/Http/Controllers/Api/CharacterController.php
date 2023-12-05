@@ -50,9 +50,9 @@ class CharacterController extends Controller
         }
 
         $characters = Character::create([
-            'name' => $request->name,
-            'brief' => $request->brief,
-            'type' => $request->type,
+            'name' => str()->title($request->name),
+            'brief' => str()->ucfirst($request->brief),
+            'type' => str()->upper($request->type),
             'series_id' => $request->series_id,
 
             // store image in database if exists
@@ -96,9 +96,9 @@ class CharacterController extends Controller
         }
 
         $character->update([
-            'name' => $request->name ?? $character->name,
-            'brief' => $request->brief ?? $character->brief,
-            'type' => $request->type ?? $character->type,
+            'name' => str()->title($request->name ?? $character->name),
+            'brief' => str()->ucfirst($request->brief ?? $character->brief),
+            'type' => str()->upper($request->type ?? $character->type),
             'series_id' => $request->series_id ?? $character->series_id,
 
             // store image in database if exists, or store the old one

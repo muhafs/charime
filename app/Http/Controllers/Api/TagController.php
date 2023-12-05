@@ -42,8 +42,8 @@ class TagController extends Controller
     function store(StoreTagRequest $request)
     {
         $tag = Tag::create([
-            'name' => $request->name,
-            'description' => $request->description,
+            'name' => str()->title($request->name),
+            'description' => str()->ucfirst($request->description),
             'category_id' => $request->category_id
         ]);
 
@@ -74,8 +74,8 @@ class TagController extends Controller
         $tag = Tag::find($request->id);
 
         $tag->update([
-            'name' => $request->name ?? $tag->name,
-            'description' => $request->description ?? $tag->description,
+            'name' => str()->title($request->name ?? $tag->name),
+            'description' => str()->ucfirst($request->description ?? $tag->description),
             'category_id' => $request->category_id ?? $tag->category_id,
         ]);
 
